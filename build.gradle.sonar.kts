@@ -142,6 +142,7 @@ tasks.test {
 	testLogging.showStandardStreams = true
 	jvmArgs("-ea")
 	maxHeapSize = "1g"
+	finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
 
 	doLast {
 		val vegaSummary = file("src/test/resources/vega/vega-summary.txt")
