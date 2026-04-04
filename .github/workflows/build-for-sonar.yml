@@ -36,7 +36,9 @@ jobs:
         run: mv build.gradle.kts build.gradle.old.kts
       - name: Rename 'build.gradle.sonar.kts' file
         run: mv build.gradle.sonar.kts build.gradle.kts
-      - name: Build and analyze
+      - name: Build
+        run: gradle build --info
+      - name: Analyze by Sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: gradle build sonar --info
+        run: gradle sonar --info
