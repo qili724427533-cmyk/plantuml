@@ -531,7 +531,7 @@ public class StringUtils {
 		return arg.substring(start, end + 1);
 	}
 
-	public static String trinNoTrace(CharSequence s) {
+	public static CharSequence trim2(CharSequence s) {
 	    final int len = s.length();
 	    if (len == 0)
 	        return "";
@@ -557,14 +557,11 @@ public class StringUtils {
 	    if (start > end)
 	        return "";
 
-	    if (start == 0 && end == len - 1) {
-	        // No trimming needed; return as String without re-allocation if possible.
-	        if (s instanceof String)
-	            return (String) s;
-	        return s.toString();
-	    }
+	    if (start == 0 && end == len - 1)
+	        return s;
+	    
 
-	    return s.subSequence(start, end + 1).toString();
+	    return s.subSequence(start, end + 1);
 	}
 
 	private static boolean isSpaceOrTabOrNull(char c) {
