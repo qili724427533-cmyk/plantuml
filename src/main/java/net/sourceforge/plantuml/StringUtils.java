@@ -323,26 +323,43 @@ public class StringUtils {
 		return false;
 	}
 
-	public static char hiddenLesserThan() {
-		return '\u0005';
-	}
+//	public static char hiddenLesserThan() {
+//		return '\u0005';
+//	}
+//
+//	public static char hiddenBiggerThan() {
+//		return '\u0006';
+//	}
+//	public static String hideComparatorCharacters(String s) {
+//		s = s.replace('<', hiddenLesserThan());
+//		s = s.replace('>', hiddenBiggerThan());
+//		return s;
+//	}
 
-	public static char hiddenBiggerThan() {
-		return '\u0006';
-	}
-
-	public static String hideComparatorCharacters(String s) {
-		s = s.replace('<', hiddenLesserThan());
-		s = s.replace('>', hiddenBiggerThan());
-		return s;
-	}
-
-	public static String showComparatorCharacters(String s) {
-		s = s.replace(hiddenLesserThan(), '<');
-		s = s.replace(hiddenBiggerThan(), '>');
-		return s;
-	}
-
+//	public static String showComparatorCharacters(String s) {
+//	    final int len = s.length();
+//	    for (int i = 0; i < len; i++) {
+//	        final char c = s.charAt(i);
+//	        if (c == '\u0005' || c == '\u0006') {
+//	            // First hidden char found at position i.
+//	            // Copy the unchanged prefix and then translate the rest in one pass.
+//	            final char[] buf = new char[len];
+//	            s.getChars(0, i, buf, 0);
+//	            buf[i] = (c == '\u0005') ? '<' : '>';
+//	            for (int j = i + 1; j < len; j++) {
+//	                final char cj = s.charAt(j);
+//	                if (cj == '\u0005')
+//	                    buf[j] = '<';
+//	                else if (cj == '\u0006')
+//	                    buf[j] = '>';
+//	                else
+//	                    buf[j] = cj;
+//	            }
+//	            return new String(buf);
+//	        }
+//	    }
+//	    return s;
+//	}
 //	private static int getWidth(Display stringsToDisplay) {
 //		int result = 1;
 //		for (CharSequence s : stringsToDisplay)
@@ -457,6 +474,9 @@ public class StringUtils {
 	private static final Pattern UNICODE = Pattern.compile("\\<U\\+([0-9a-fA-F]{4,5})\\>");
 
 	public static String manageUnicodeNotationUplus(String s) {
+		if (s.indexOf("<U+") < 0)
+			return s;
+
 		final Matcher matcher = UNICODE.matcher(s);
 		final StringBuffer result = new StringBuffer(); // Can't be switched to StringBuilder in order to support Java 8
 		while (matcher.find()) {
@@ -467,29 +487,6 @@ public class StringUtils {
 		}
 		matcher.appendTail(result);
 		return result.toString();
-	}
-
-	private static final Pattern AMP_HASH = Pattern.compile("\\&#([0-9]+);");
-
-	public static String manageAmpDiese(String s) {
-		final Matcher matcher = AMP_HASH.matcher(s);
-		final StringBuffer result = new StringBuffer(); // Can't be switched to StringBuilder in order to support Java 8
-		while (matcher.find()) {
-			final int codePoint = Integer.parseInt(matcher.group(1));
-			final String unicode = new String(Character.toChars(codePoint));
-			matcher.appendReplacement(result, unicode);
-		}
-		matcher.appendTail(result);
-		return result.toString();
-	}
-
-	public static String manageTildeArobaseStart(String s) {
-		s = s.replaceAll("~@start", "@start");
-		return s;
-	}
-
-	public static String manageEscapedTabs(String s) {
-		return s.replace("\\t", "\t");
 	}
 
 	public static long seed(String string) {

@@ -129,7 +129,7 @@ public class Splitter {
 		final Matcher2 matcher = tagOrText.matcher(s);
 		while (matcher.find()) {
 			String part = matcher.group(0);
-			part = StringUtils.showComparatorCharacters(part);
+			// part = StringUtils.showComparatorCharacters(part);
 			split.add(part);
 		}
 	}
