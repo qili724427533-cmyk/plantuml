@@ -42,31 +42,45 @@ public class CharHidder {
 	}
 
 	public static String hide(String s) {
-		// System.err.println("hide " + s);
-		final StringBuilder result = new StringBuilder();
-		for (int i = 0; i < s.length(); i++) {
-			final char c = s.charAt(i);
-			if (c == '\\' && i + 1 < s.length() && s.charAt(i + 1) == '~') {
-				result.append(hideChar('~'));
-				i++;
-			} else if (c == '~' && i + 1 < s.length()) {
-				i++;
-				final char c2 = s.charAt(i);
-				if (isToBeHidden(c2)) {
-					result.append(hideChar(c2));
-				} else {
-					result.append(c);
-					result.append(c2);
-				}
-
-			} else {
-				result.append(c);
-			}
-		}
-		// System.err.println("---> " + result);
-		return result.toString();
+	    final int len = s.length();
+	    char[] buf = null; // allocated lazily on first match
+	    int n = 0; // write index in buf
+	    int i = 0;
+	    while (i < len) {
+	        final char c = s.charAt(i);
+	        if (c == '\\' && i + 1 < len && s.charAt(i + 1) == '~') {
+	            if (buf == null) {
+	                buf = new char[len];
+	                s.getChars(0, i, buf, 0);
+	                n = i;
+	            }
+	            buf[n++] = (char) ('\uE000' + '~');
+	            i += 2;
+	        } else if (c == '~' && i + 1 < len) {
+	            final char c2 = s.charAt(i + 1);
+	            if (isToBeHidden(c2)) {
+	                if (buf == null) {
+	                    buf = new char[len];
+	                    s.getChars(0, i, buf, 0);
+	                    n = i;
+	                }
+	                buf[n++] = (char) ('\uE000' + c2);
+	                i += 2;
+	            } else {
+	                if (buf != null) {
+	                    buf[n++] = c;
+	                    buf[n++] = c2;
+	                }
+	                i += 2;
+	            }
+	        } else {
+	            if (buf != null)
+	                buf[n++] = c;
+	            i++;
+	        }
+	    }
+	    return buf == null ? s : new String(buf, 0, n);
 	}
-
 	private static boolean isToBeHidden(final char c) {
 		if (c == '_' || c == '-' || c == '\"' || c == '#' || c == ']' || c == '[' || c == '*' || c == '.' || c == '/'
 				|| c == '<')
@@ -90,13 +104,24 @@ public class CharHidder {
 	}
 
 	public static String unhide(String s) {
-		final StringBuilder result = new StringBuilder();
-		for (int i = 0; i < s.length(); i++) {
-			final char c = s.charAt(i);
-			result.append(unhideChar(c));
-		}
-		// System.err.println("unhide " + result);
-		return result.toString();
+	    final int len = s.length();
+	    for (int i = 0; i < len; i++) {
+	        final char c = s.charAt(i);
+	        if (c >= '\uE000' && c <= '\uE0FF') {
+	            // First hidden char found at position i.
+	            final char[] buf = new char[len];
+	            s.getChars(0, i, buf, 0);
+	            buf[i] = (char) (c - '\uE000');
+	            for (int j = i + 1; j < len; j++) {
+	                final char cj = s.charAt(j);
+	                if (cj >= '\uE000' && cj <= '\uE0FF')
+	                    buf[j] = (char) (cj - '\uE000');
+	                else
+	                    buf[j] = cj;
+	            }
+	            return new String(buf);
+	        }
+	    }
+	    return s;
 	}
-
 }
