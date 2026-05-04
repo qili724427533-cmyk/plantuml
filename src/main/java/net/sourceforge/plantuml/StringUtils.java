@@ -509,13 +509,13 @@ public class StringUtils {
 
 		while (start <= end) {
 			final char cStart = arg.charAt(start);
-			if (cStart == ' ' || cStart == '\t' || cStart == '\r' || cStart == '\n' || cStart == '\0') {
+			if (cStart <= ' ') {
 				start++;
 				continue;
 			}
 
 			final char cEnd = arg.charAt(end);
-			if (cEnd == ' ' || cEnd == '\t' || cEnd == '\r' || cEnd == '\n' || cEnd == '\0') {
+			if (cEnd <= ' ') {
 				end--;
 				continue;
 			}
@@ -532,7 +532,39 @@ public class StringUtils {
 	}
 
 	public static String trinNoTrace(CharSequence s) {
-		return s.toString().trim();
+	    final int len = s.length();
+	    if (len == 0)
+	        return "";
+
+	    int start = 0;
+	    int end = len - 1;
+
+	    while (start <= end) {
+	        final char cStart = s.charAt(start);
+	        if (cStart <= ' ') {
+	            start++;
+	            continue;
+	        }
+
+	        final char cEnd = s.charAt(end);
+	        if (cEnd <= ' ') {
+	            end--;
+	            continue;
+	        }
+	        break;
+	    }
+
+	    if (start > end)
+	        return "";
+
+	    if (start == 0 && end == len - 1) {
+	        // No trimming needed; return as String without re-allocation if possible.
+	        if (s instanceof String)
+	            return (String) s;
+	        return s.toString();
+	    }
+
+	    return s.subSequence(start, end + 1).toString();
 	}
 
 	private static boolean isSpaceOrTabOrNull(char c) {
