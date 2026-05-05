@@ -139,7 +139,7 @@ public class UbrexUrlBuilder {
 
 	private UMatcher getMatcher(UnicodeBracketedExpression ubrex, String s) {
 		if (mode == UrlMode.STRICT)
-			return ubrex.match(s);
+			return ubrex.match(s, 0);
 		final TextNavigator tn = TextNavigator.build(s);
 		for (int i = 0; i < tn.length() - 2; i++) {
 			final UMatcher matcher = ubrex.match(tn, i);

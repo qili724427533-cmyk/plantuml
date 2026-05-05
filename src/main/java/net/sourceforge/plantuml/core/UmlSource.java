@@ -274,7 +274,7 @@ final public class UmlSource {
 	 */
 	public Display getTitle() {
 		for (StringLocated s : source) {
-			final Matcher2 m = TITLE.matcher(s.getString());
+			final Matcher2 m = TITLE.matcher(s.getString(), 0);
 			final boolean ok = m.matches();
 			if (ok)
 				return Display.create(m.group(1));

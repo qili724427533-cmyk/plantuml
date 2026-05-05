@@ -144,7 +144,7 @@ public class StartUtils {
 
 	public static StringLocated getPossibleAppend(StringLocated cs) {
 		final String s = cs.getString();
-		final Matcher2 m = append.matcher(s);
+		final Matcher2 m = append.matcher(s, 0);
 		if (m.find()) {
 			final String tmp = s.substring(m.group(0).length(), s.length());
 			return new StringLocated(StringUtils.trin(tmp), cs.getLocation(), cs.getPreprocessorError());

@@ -222,7 +222,9 @@ public enum DiagramType {
 		if (p + len > text.length())
 			return false;
 		for (int i = 0; i < len; i++) {
-			final char c = text.charAt(p + i);
+			char c = text.charAt(p + i);
+			if (c >= 'A' && c <= 'Z')
+				c += 'a' - 'A';
 			if (c != key.charAt(i))
 				return false;
 		}

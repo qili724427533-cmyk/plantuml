@@ -102,7 +102,7 @@ public class EmbeddedDiagram extends TextBlockMemoized implements Line, Atom {
 			final CharSequence s2 = it.next();
 			if (EmbeddedDiagram.getEmbeddedType(s2) != null)
 				nested++;
-			else if (StringUtils.trim2(s2).equals(EmbeddedDiagram.EMBEDDED_END)) {
+			else if (StringUtils.trim2(s2.toString()).equals(EmbeddedDiagram.EMBEDDED_END)) {
 				nested--;
 				if (nested == 0)
 					break;

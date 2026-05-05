@@ -147,7 +147,7 @@ public class StringUtils {
 	}
 
 	final static public List<String> getSplit(Pattern2 pattern, String line) {
-		final Matcher2 m = pattern.matcher(line);
+		final Matcher2 m = pattern.matcher(line, 0);
 		if (m.find() == false)
 			return null;
 
@@ -434,7 +434,7 @@ public class StringUtils {
 	public static List<String> splitComma(String s) {
 		s = trin(s);
 		final List<String> result = new ArrayList<>();
-		final Matcher2 m = SPLIT_COMMA.matcher(s);
+		final Matcher2 m = SPLIT_COMMA.matcher(s, 0);
 		while (m.find())
 			result.add(eventuallyRemoveStartingAndEndingDoubleQuote(m.group(0)));
 
