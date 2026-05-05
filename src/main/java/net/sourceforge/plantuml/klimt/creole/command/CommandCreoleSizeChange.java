@@ -78,7 +78,7 @@ public class CommandCreoleSizeChange implements Command {
 	}
 
 	@Override
-	public int executeAndGetRemaining(ISkinSimple skinSimple, String line, int pos, StripeSimple stripe) {
+	public int executeAndAdvance(ISkinSimple skinSimple, String line, int pos, StripeSimple stripe) {
 		final Matcher2 m = mypattern.matcher(line, pos);
 		if (m.find() == false)
 			throw new IllegalStateException();

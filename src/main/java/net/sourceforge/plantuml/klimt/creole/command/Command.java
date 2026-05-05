@@ -46,5 +46,5 @@ public interface Command {
 
 	public int matchingSize(String line, int pos);
 
-	public int executeAndGetRemaining(ISkinSimple skinSimple, String line, int pos, StripeSimple stripe);
+	public int executeAndAdvance(ISkinSimple skinSimple, String line, int pos, StripeSimple stripe);
 }

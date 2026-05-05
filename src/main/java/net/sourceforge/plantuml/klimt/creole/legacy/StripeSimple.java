@@ -280,7 +280,7 @@ public class StripeSimple implements Stripe {
 				pos++;
 			} else {
 				addPending(pending);
-				pos += cmd.executeAndGetRemaining(skinParam, line, pos, this);
+				pos += cmd.executeAndAdvance(skinParam, line, pos, this);
 			}
 		}
 		addPending(pending);
