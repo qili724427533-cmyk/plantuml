@@ -5,12 +5,12 @@
  * (C) Copyright 2009-2024, Arnaud Roques
  *
  * Project Info:  https://plantuml.com
- * 
+ *
  * If you like this project or if you find it useful, you can support us at:
- * 
+ *
  * https://plantuml.com/patreon (only 1$ per month!)
  * https://plantuml.com/paypal
- * 
+ *
  * This file is part of PlantUML.
  *
  * PlantUML is free software; you can redistribute it and/or modify it
@@ -34,25 +34,31 @@
  */
 package com.plantuml.ubrex;
 
-import java.util.List;
+class CaptureEntry {
 
-public interface UMatcher {
+	private final String key;
+	private final String value;
 
-	public boolean startMatch();
+	public CaptureEntry(String key, String value) {
+		this.key = key;
+		this.value = value;
+	}
 
-	public boolean exactMatch();
+	public String getKey() {
+		return key;
+	}
 
-	public String getAcceptedMatch();
+	public String getValue() {
+		return value;
+	}
 
-	public List<String> getCapture(String path);
+	public CaptureEntry withPrefixedKey(String prefix) {
+		return new CaptureEntry(prefix + "/" + key, value);
+	}
 
-	public List<String> findFirstValuesByKeyPrefix(String keyPrefix);
-
-	public default String get(String key, int num) {
-		final List<String> tmp = getCapture(key);
-		if (num >= tmp.size())
-			return null;
-		return tmp.get(num);
+	@Override
+	public String toString() {
+		return key + "=" + value;
 	}
 
 }

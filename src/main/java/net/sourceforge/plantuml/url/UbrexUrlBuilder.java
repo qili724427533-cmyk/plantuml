@@ -206,15 +206,9 @@ public class UbrexUrlBuilder {
 		}
 
 		@Override
-		public List<String> getKeysToBeRefactored() {
+		public List<String> findFirstValuesByKeyPrefix(String keyPrefix) {
 			throw new UnsupportedOperationException();
 		}
-
-		@Override
-		public List<String> getRootKeys() {
-			throw new UnsupportedOperationException();
-		}
-
 	}
 
 }
