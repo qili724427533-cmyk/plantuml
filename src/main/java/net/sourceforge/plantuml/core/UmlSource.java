@@ -214,17 +214,11 @@ final public class UmlSource {
 		if (seedCacheValid)
 			return seedCache;
 
-		// Inlined equivalent of StringUtils.seed(getPlainString("\n"))
-		// to avoid building a full intermediate String.
-		long h = 1125899906842597L; // prime - must match StringUtils.seed
+		long h = 1125899906842597L; // prime
 		for (StringLocated sl : source) {
-			final String s = sl.getString();
-			final int len = s.length();
-			for (int i = 0; i < len; i++)
-				h = 31 * h + s.charAt(i);
-			h = 31 * h + '\n'; // separator, matches getPlainString("\n")
+		    h = 31 * h + sl.getString().hashCode();
+		    h = 31 * h + '\n';
 		}
-
 		seedCache = h;
 		seedCacheValid = true;
 		return h;
