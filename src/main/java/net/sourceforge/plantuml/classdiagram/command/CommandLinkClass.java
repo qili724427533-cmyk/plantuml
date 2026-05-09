@@ -71,8 +71,8 @@ import net.sourceforge.plantuml.utils.LineLocation;
 
 final public class CommandLinkClass extends SingleLineCommand2<AbstractClassOrObjectDiagram> {
 
-	private static final String SINGLE = "[.\\\\]{0,2}[%pLN_]+(?:[.\\\\]{1,2}[%pLN_]+)*";
-	private static final String SINGLE_GUILLEMENT = "[%g][.\\\\]{0,2}[%pLN_]+(?:[.\\\\]{1,2}[%pLN_]+)*[%g]";
+	private static final String SINGLE = "[.\\\\!]{0,2}[%pLN_]+(?:[.\\\\!]{1,2}[%pLN_]+)*";
+	private static final String SINGLE_GUILLEMENT = "[%g][.\\\\!]{0,2}[%pLN_]+(?:[.\\\\!]{1,2}[%pLN_]+)*[%g]";
 	private static final String SINGLE2 = "(?:" + SINGLE + "|" + SINGLE_GUILLEMENT + ")";
 	private static final String COUPLE = "\\([%s]*(" + SINGLE2 + ")[%s]*,[%s]*(" + SINGLE2 + ")[%s]*\\)";
 
@@ -154,7 +154,7 @@ final public class CommandLinkClass extends SingleLineCommand2<AbstractClassOrOb
 	}
 
 	public static String getSeparator() {
-		return "(?:\\.|::|\\\\|\\\\\\\\)";
+		return "(?:\\.|::|\\\\|\\\\\\\\|!)"; // '!' added for issue #2685
 	}
 
 	@Override
