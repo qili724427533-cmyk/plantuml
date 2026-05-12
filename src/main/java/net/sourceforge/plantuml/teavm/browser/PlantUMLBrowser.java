@@ -238,8 +238,23 @@ public class PlantUMLBrowser {
 	 * {@code elementId}.
 	 *
 	 * <p>
+	 * This method does NOT perform the rendering itself — it only queues the
+	 * request and wakes up the worker thread. This is necessary because:
+	 *
+	 * <ol>
+	 * <li>This method is called from a native JS context (event handler,
+	 * setTimeout, etc.)</li>
+	 * <li>Viz.js async calls require a TeaVM coroutine context</li>
+	 * <li>The worker thread provides that coroutine context</li>
+	 * </ol>
+	 *
+	 * <p>
 	 * This call is asynchronous: it returns immediately, and the SVG is inserted
 	 * later from the worker thread.
+	 *
+	 * <p>
+	 * If a previous request is still pending (worker hasn't picked it up yet), it
+	 * will be overwritten. This is the desired behavior for live-typing scenarios.
 	 *
 	 * @param lines     the PlantUML source code, split into lines by the JavaScript
 	 *                  caller
@@ -264,6 +279,11 @@ public class PlantUMLBrowser {
 	/**
 	 * Renders a PlantUML diagram and delivers the resulting SVG as a string via
 	 * the {@code onSuccess} callback. Errors go to {@code onError}.
+	 *
+	 * <p>
+	 * Same queueing and asynchronous behavior as {@link #render}: this method
+	 * only queues the request; the worker thread performs the actual rendering
+	 * and invokes the callback. A previous pending request will be overwritten.
 	 *
 	 * @param lines     the PlantUML source code, split into lines by the JavaScript
 	 *                  caller
