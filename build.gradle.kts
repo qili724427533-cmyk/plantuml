@@ -675,34 +675,29 @@ tasks.named("generateGitProperties") {
 	}
 }
 
-val filteredSrcDir = layout.buildDirectory.dir("generated/sources/git-filtered")
+// `patchCompilationInfo` injects build metadata (version, git commit id, compile timestamp)
+// directly into src/main/java/.../CompilationInfo.java.
+//
+// IMPORTANT: this task is intentionally NOT wired as a dependency of `compileJava`,
+// `jar` or any other build task. It must be invoked EXPLICITLY (typically from CI,
+// before `gradle build` / `gradle teavm`).
+//
+// Rationale: keeping the main source set pointing to plain `src/main/java` (no
+// generated/filtered copy) avoids a lot of IDE-side problems for contributors.
+// As a side effect, local builds produce a jar in which `CompilationInfo` keeps
+// its placeholder values ("$version$", "$git.commit.id$", 0L). This is fine for
+// dev builds; official artifacts are built by GitHub Actions, which calls
+// `patchCompilationInfo` first.
+//
+// The task modifies a tracked source file in place. After running it, the working
+// tree contains uncommitted changes -- this is expected in CI (ephemeral runner),
+// but if you ever need to run it locally, remember to `git restore` the file
+// afterwards, or use `-PpatchCompilationInfo` workflows carefully.
+val patchCompilationInfo by tasks.registering {
+	group = "build"
+	description = "Patches src/main/java/.../CompilationInfo.java in place with version, git commit id and compile timestamp. NOT wired automatically -- call explicitly (typically from CI)."
 
-// Cleanup of generated filtered sources (avoid leaving copied sources on disk)
-val cleanupGitFilteredSources by tasks.registering(Delete::class) {
-    group = "build"
-    description = "Deletes build/generated/sources/git-filtered after the build."
-    delete(filteredSrcDir)
-}
-
-val keepFilteredSrc = project.hasProperty("keepFilteredSrc")
-
-tasks.named("build") {
-    if (!keepFilteredSrc) finalizedBy(cleanupGitFilteredSources)
-}
-tasks.named("jar") {
-    if (!keepFilteredSrc) finalizedBy(cleanupGitFilteredSources)
-}
-
-tasks.named("site") {
-    if (!keepFilteredSrc) finalizedBy(cleanupGitFilteredSources)
-}
-
-val filterSourcesWithBuildInfo by tasks.registering {
 	dependsOn("generateGitProperties")
-	mustRunAfter("processResources")
-
-	inputs.dir("src/main/java")
-	outputs.dir(filteredSrcDir)
 
 	doLast {
 		// 1) Read git.properties
@@ -714,16 +709,8 @@ val filterSourcesWithBuildInfo by tasks.registering {
 		// 2) Compute compile timestamp (epoch millis)
 		val compileTs = System.currentTimeMillis().toString()
 
-		// 3) Copy sources
-		val outDir = filteredSrcDir.get().asFile
-		outDir.deleteRecursively()
-		project.copy {
-			from("src/main/java")
-			into(outDir)
-		}
-
-		// 4) Ant replace in the copy
-		val targetFile = outDir.resolve("net/sourceforge/plantuml/version/CompilationInfo.java")
+		// 3) Locate the target file directly in src/main/java
+		val targetFile = file("src/main/java/net/sourceforge/plantuml/version/CompilationInfo.java")
 		if (!targetFile.exists()) {
 			error("Target file not found: ${targetFile.absolutePath}")
 		}
@@ -731,6 +718,7 @@ val filterSourcesWithBuildInfo by tasks.registering {
 		// 4) Get project version
 		val projectVersion = project.version.toString()
 
+		// 5) Ant replace in place
 		ant.withGroovyBuilder {
 			// version replacement
 			"replace"(
@@ -754,24 +742,10 @@ val filterSourcesWithBuildInfo by tasks.registering {
 			)
 		}
 
-		println("Injected version into ${targetFile.name}: $projectVersion")
-		println("Injected git.commit.id into ${targetFile.name}: $commitId")
-		println("Injected compile timestamp into ${targetFile.name}: $compileTs")
+		println("Patched version into ${targetFile.name}: $projectVersion")
+		println("Patched git.commit.id into ${targetFile.name}: $commitId")
+		println("Patched compile timestamp into ${targetFile.name}: $compileTs")
 	}
-}
-
-sourceSets.named("main") {
-	java.setSrcDirs(listOf(filteredSrcDir))
-}
-
-tasks.compileJava {
-	dependsOn(filterSourcesWithBuildInfo)
-}
-
-tasks.configureEach {
-    if (name == "sourcesJar") {
-        dependsOn(filterSourcesWithBuildInfo)
-    }
 }
 
 // ============================================
