@@ -110,7 +110,7 @@ public class Colors {
 					this.shadowing = value.equalsIgnoreCase("true");
 				} else {
 					final ColorType key = ColorType.getType(name);
-					final HColor color = set.getColor(value);
+					final HColor color = set.getColorOrNull(value);
 					map.put(key, color);
 				}
 			}

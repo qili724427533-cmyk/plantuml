@@ -41,15 +41,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sourceforge.plantuml.abel.LeafType;
 import net.sourceforge.plantuml.activitydiagram3.ftile.BoxStyle;
 import net.sourceforge.plantuml.klimt.color.ColorType;
 import net.sourceforge.plantuml.klimt.color.Colors;
+import net.sourceforge.plantuml.klimt.color.HColor;
 import net.sourceforge.plantuml.klimt.color.HColorSet;
 import net.sourceforge.plantuml.klimt.color.NoSuchColorException;
 import net.sourceforge.plantuml.regex.IRegex;
 import net.sourceforge.plantuml.regex.RegexLeaf;
 import net.sourceforge.plantuml.regex.RegexOptional;
 import net.sourceforge.plantuml.regex.RegexResult;
+import net.sourceforge.plantuml.style.Style;
 
 public class Stereogroup {
 
@@ -93,6 +96,30 @@ public class Stereogroup {
 		return BoxStyle.PLAIN;
 	}
 
+	public LeafType getLeafType() {
+		final List<String> labels = getLabels();
+		if (labels.size() == 0)
+			return null;
+
+		switch (labels.get(0).toLowerCase()) {
+		case "choice":
+			return LeafType.STATE_CHOICE;
+		case "fork":
+		case "join":
+			return LeafType.STATE_FORK_JOIN;
+		case "start":
+			return LeafType.CIRCLE_START;
+		case "end":
+			return LeafType.CIRCLE_END;
+		case "history":
+			return LeafType.PSEUDO_STATE;
+		case "history*":
+			return LeafType.DEEP_HISTORY;
+		default:
+			return null;
+		}
+	}
+
 	public List<String> getLabels() {
 		if (definition == null)
 			return Collections.emptyList();
@@ -111,6 +138,47 @@ public class Stereogroup {
 				return new Colors(label, colorSet, ColorType.BACK);
 
 		return Colors.empty();
+	}
+
+	public Style mute(Style style, HColorSet colorSet) throws NoSuchColorException {
+		Colors toto = getColors2(colorSet);
+
+		return style.eventuallyOverride(toto);
+	}
+
+	public Colors getColors2(HColorSet colorSet) throws NoSuchColorException {
+		Colors colors = Colors.empty();
+		for (String label : getLabels()) {
+			if (label.startsWith("###")) {
+				label = label.substring(3);
+				final HColor textColor = colorSet.getColorOrNull(label);
+				if (textColor != null)
+					colors = colors.add(ColorType.TEXT, textColor);
+
+			}
+			if (label.startsWith("##")) {
+				label = label.substring(2);
+
+				if (label.charAt(0) == '[') {
+					int x = label.indexOf(']');
+					if (x != -1) {
+						colors = colors.addLegacyStroke(label.substring(1, x));
+						label = label.substring(x + 1);
+					} else
+						label = "";
+				}
+
+				if (label.length() > 0) {
+					final HColor lineColor = colorSet.getColorOrNull(label);
+					if (lineColor != null)
+						colors = colors.add(ColorType.LINE, lineColor);
+				}
+
+			} else if (label.startsWith("#")) {
+				colors = colors.mergeWith(new Colors(label, colorSet, ColorType.BACK));
+			}
+		}
+		return colors;
 	}
 
 }
