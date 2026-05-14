@@ -35,9 +35,7 @@
  */
 package net.sourceforge.plantuml.core;
 
-// ::comment when __TEAVM__
 import java.awt.Graphics2D;
-// ::done
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Set;
