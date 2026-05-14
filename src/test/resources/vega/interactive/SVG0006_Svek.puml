@@ -1,7 +1,6 @@
 ---
 output: svg
 expected-description: (4 entities)
-allow-failure: true
 ---
 @startuml
 !pragma svginteractive true

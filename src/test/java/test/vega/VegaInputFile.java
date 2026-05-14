@@ -62,7 +62,7 @@ public class VegaInputFile {
 	static {
 		CHECKERS.put(FileFormat.DEBUG, new VegaCheckerDebug());
 		CHECKERS.put(FileFormat.LATEX_FIXED, new VegaCheckerLatex());
-		CHECKERS.put(FileFormat.SVG_FIXED, new VegaCheckerSvg());
+		CHECKERS.put(FileFormat.SVG_DETERMINISTIC, new VegaCheckerSvg());
 		CHECKERS.put(FileFormat.SCXML, new VegaCheckerScxml());
 		CHECKERS.put(FileFormat.GRAPHML, new VegaCheckerGraphml());
 		CHECKERS.put(FileFormat.PREPROC, new VegaCheckerPreproc());
@@ -228,13 +228,13 @@ public class VegaInputFile {
 	private List<FileFormat> getFileFormats() {
 		final String value = getYamlString("output");
 		if (value == null)
-			return Collections.singletonList(FileFormat.SVG_FIXED);
+			return Collections.singletonList(FileFormat.SVG_DETERMINISTIC);
 
 		final List<FileFormat> result = new ArrayList<>();
 		for (final String token : value.split(",")) {
 			final String trimmed = token.trim().toUpperCase();
 			if (trimmed.equals("SVG"))
-				result.add(FileFormat.SVG_FIXED);
+				result.add(FileFormat.SVG_DETERMINISTIC);
 			else if (trimmed.equals("LATEX"))
 				result.add(FileFormat.LATEX_FIXED);
 			else

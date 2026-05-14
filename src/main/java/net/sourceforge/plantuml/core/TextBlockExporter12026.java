@@ -243,7 +243,7 @@ public class TextBlockExporter12026 {
 			return createUGraphicPNG(scaleFactor, dim, fileFormatOption.getWatermark(),
 					fileFormatOption.getFileFormat());
 		case SVG:
-		case SVG_FIXED:
+		case SVG_DETERMINISTIC:
 		case NULL:
 			return createUGraphicSVG(scaleFactor, dim, p);
 		case EPS:
@@ -299,7 +299,7 @@ public class TextBlockExporter12026 {
 			option = option.withSvgDimensionStyle(skinParam.svgDimensionStyle());
 		}
 
-		return UGraphicSvg.build(option, false, seed, stringBounder);
+		return UGraphicSvg.build(option, false, seed, stringBounder, fileFormatOption.getFileFormat());
 	}
 
 	private UGraphic createUGraphicPNG(double scaleFactor, XDimension2D dim, String watermark, FileFormat format) {
