@@ -38,6 +38,8 @@ package net.sourceforge.plantuml.svek;
 import java.util.Objects;
 
 import net.sourceforge.plantuml.abel.Entity;
+import net.sourceforge.plantuml.klimt.UGroup;
+import net.sourceforge.plantuml.klimt.UGroupType;
 import net.sourceforge.plantuml.klimt.UStroke;
 import net.sourceforge.plantuml.klimt.UTranslate;
 import net.sourceforge.plantuml.klimt.color.ColorType;
@@ -62,6 +64,7 @@ import net.sourceforge.plantuml.url.Url;
 
 public final class InnerStateAutonom extends TextBlockMemoized implements IEntityImage {
 
+	private final Entity entity;
 	private final IEntityImage im;
 	private final TextBlock name;
 	private final TextBlock attribute;
@@ -78,6 +81,7 @@ public final class InnerStateAutonom extends TextBlockMemoized implements IEntit
 
 	public InnerStateAutonom(IEntityImage im, Entity group) {
 		this.im = Objects.requireNonNull(im);
+		this.entity = group;
 		final ISkinParam skinParam = group.getSkinParam();
 
 		final StyleBuilder styleBuilder = skinParam.getCurrentStyleBuilder();
@@ -135,6 +139,14 @@ public final class InnerStateAutonom extends TextBlockMemoized implements IEntit
 		final RoundedContainer r = new RoundedContainer(borderColor, total, nameHeight, descriptionHeight,
 				northBackcolor, centerBackColor, southBackcolor, stroke, rounded, shadowing);
 
+		final UGroup group = new UGroup(entity.getLocation());
+		group.put(UGroupType.CLASS, "entity");
+		group.put(UGroupType.ID, "entity_" + entity.getName());
+		group.put(UGroupType.DATA_ENTITY, entity.getName());
+		group.put(UGroupType.DATA_UID, entity.getUid());
+		group.put(UGroupType.DATA_QUALIFIED_NAME, entity.getQuark().getQualifiedName());
+		ug.startGroup(group);
+
 		if (url != null)
 			ug.startUrl(url);
 
@@ -152,6 +164,8 @@ public final class InnerStateAutonom extends TextBlockMemoized implements IEntit
 
 		if (url != null)
 			ug.closeUrl();
+
+		ug.closeGroup();
 
 	}
 
