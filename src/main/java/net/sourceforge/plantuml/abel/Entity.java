@@ -169,6 +169,7 @@ final public class Entity implements SpecificBackcolorable, Hideable, Removeable
 			this.uid = "entroot";
 		else
 			this.uid = StringUtils.getUid("ent", diagram.getUniqueSequenceValue());
+
 		this.bodier = bodier;
 		this.rawLayout = rawLayout;
 		this.quark.setData(this);
@@ -608,7 +609,8 @@ final public class Entity implements SpecificBackcolorable, Hideable, Removeable
 
 	public TextBlock getStateDescription(ISkinParam skinParam) {
 		checkGroup();
-		final Style style = EntityImageStateCommon.getStyleStateDescription(this.getStereotype(), skinParam.getCurrentStyleBuilder());
+		final Style style = EntityImageStateCommon.getStyleStateDescription(this.getStereotype(),
+				skinParam.getCurrentStyleBuilder());
 		final List<CharSequence> details = getBodier().getRawBody();
 
 		if (details.size() == 0)
