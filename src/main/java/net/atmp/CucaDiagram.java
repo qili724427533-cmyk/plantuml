@@ -158,6 +158,7 @@ public abstract class CucaDiagram extends TitledDiagram implements GroupHierarch
 	@Override
 	public void startingPass(ParserPass pass) {
 		this.setLastEntity(null);
+		this.cpt2.set(0);
 		if (stacks.size() > 1)
 			stacks.subList(1, stacks.size()).clear();
 	}
